@@ -2,7 +2,11 @@
 GoBarber Backend on Node.js - Developed during Rocketseat Bootcamp GoStack
 
 ## Installing the project
-Docker: `docker run --name database -e POSTGRES_PASSWORD=docker -d -p 5432:5432 -d postgres:11`
+### Docker
+```
+docker run --name database -e POSTGRES_PASSWORD=docker -d -p 5432:5432 -d postgres:11`
+docker run --name mongobarber -p 27017:27017 -d -t mongo
+```
 
 Sequelize: `yarn sequelize db:migrate`
 
