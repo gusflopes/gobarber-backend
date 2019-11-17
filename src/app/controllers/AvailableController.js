@@ -32,7 +32,6 @@ class AvailableController {
 
     const schedule = [
       '08:00',
-      '08:30',
       '09:00',
       '10:00',
       '11:00',
@@ -41,7 +40,6 @@ class AvailableController {
       '14:00',
       '15:00',
       '16:00',
-      '16:30',
       '17:00',
       '18:00',
     ];
