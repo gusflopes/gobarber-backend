@@ -1,6 +1,9 @@
 import * as Yup from 'yup';
-import User from '../models/User';
+import aws from 'aws-sdk';
 import File from '../models/File';
+import User from '../models/User';
+
+const s3 = new aws.S3();
 
 class UserController {
   async store(req, res) {
@@ -54,9 +57,17 @@ class UserController {
 
     const { email, oldPassword } = req.body;
 
-    const user = await User.findByPk(req.userId);
+    const user = await User.findByPk(req.userId, {
+      include: [
+        {
+          model: File,
+          as: 'avatar',
+          attributes: ['id', 'path', 'url'],
+        },
+      ],
+    });
 
-    if (email !== user.email) {
+    if (email && email !== user.email) {
       const userExists = await User.findOne({ where: { email } });
 
       if (userExists) {
@@ -68,7 +79,41 @@ class UserController {
       return res.status(401).json({ error: 'Password does not match' });
     }
 
-    await user.update(req.body);
+    const { avatar_id } = req.body;
+    if (avatar_id) {
+      console.log('ALTERANDO AVATAR_ID!!');
+
+      // Buscar os dados antes do Update
+      console.log(`user Atual: ${JSON.stringify(user)}`);
+
+      const { id: avatarDestroy, path: avatarPath } = user.avatar;
+
+      console.log(`Avatar: ${avatarDestroy} e Path: ${avatarPath}`);
+
+      await user.update(req.body);
+
+      // Deletar o Avatar antigo no SQL
+      File.destroy({
+        where: {
+          id: avatarDestroy,
+        },
+      });
+
+      // Delete Avatar antigo na AWS
+      if (process.env.STORAGE_TYPE === 's3') {
+        s3.deleteObject(
+          {
+            Bucket: 'godent',
+            Key: avatarPath,
+          },
+          async err => {
+            if (err) console.log(err, err.stack);
+            // an error occurred
+            else console.log('File deleted'); // successful response
+          }
+        );
+      }
+    }
 
     const { id, name, avatar, provider } = await User.findByPk(req.userId, {
       include: [
