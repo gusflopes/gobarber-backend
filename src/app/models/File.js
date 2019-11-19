@@ -6,10 +6,15 @@ class File extends Model {
       {
         name: Sequelize.STRING,
         path: Sequelize.STRING,
+        size: Sequelize.INTEGER,
         url: {
           type: Sequelize.VIRTUAL,
           get() {
-            return `${process.env.APP_URL}/files/${this.path}`;
+            const url =
+              process.env.STORAGE_TYPE === 's3'
+                ? `${process.env.APP_S3_URL}/${this.path}}`
+                : `${process.env.APP_URL}/files/${this.path}`;
+            return url;
           },
         },
       },
