@@ -2,6 +2,8 @@ import aws from 'aws-sdk';
 import File from '../models/File';
 import User from '../models/User';
 
+import Cache from '../../lib/Cache';
+
 const s3 = new aws.S3();
 
 class UserController {
@@ -12,6 +14,10 @@ class UserController {
     }
 
     const { id, name, email, provider } = await User.create(req.body);
+
+    if (provider) {
+      await Cache.invalidate('providers');
+    }
 
     return res.json({
       id,
@@ -91,6 +97,11 @@ class UserController {
         },
       ],
     });
+
+    // Clear Cache
+    if (provider) {
+      await Cache.invalidate('providers');
+    }
 
     return res.json({
       id,
