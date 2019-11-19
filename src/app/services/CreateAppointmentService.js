@@ -4,6 +4,8 @@ import User from '../models/User';
 import Notification from '../schemas/Notification';
 import Appointment from '../models/Appointment';
 
+import Cache from '../../lib/Cache';
+
 class CreateAppointmentService {
   async run({ provider_id, user_id, date }) {
     /**
@@ -67,6 +69,12 @@ class CreateAppointmentService {
       req.io.to(ownerSocket).emit('notification', notification);
     }
     */
+
+    /** *
+     * Invalidate Cache
+     */
+    await Cache.invalidatePrefix(`user:${user_id}:appointments`);
+
     return appointment;
   }
 }
