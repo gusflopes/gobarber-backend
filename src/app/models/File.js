@@ -12,7 +12,7 @@ class File extends Model {
           get() {
             const url =
               process.env.STORAGE_TYPE === 's3'
-                ? `${process.env.APP_S3_URL}/${this.path}}`
+                ? `${process.env.APP_S3_URL}/${this.path}`
                 : `${process.env.APP_URL}/files/${this.path}`;
             return url;
           },
