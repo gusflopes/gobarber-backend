@@ -52,39 +52,34 @@ class UserController {
       return res.status(401).json({ error: 'Password does not match' });
     }
 
+    await user.update(req.body);
+
     const { avatar_id } = req.body;
     if (avatar_id) {
-      console.log('ALTERANDO AVATAR_ID!!');
+      if (user.avatar) {
+        const { id: avatarDestroy, path: avatarPath } = user.avatar;
 
-      // Buscar os dados antes do Update
-      console.log(`user Atual: ${JSON.stringify(user)}`);
-
-      const { id: avatarDestroy, path: avatarPath } = user.avatar;
-
-      console.log(`Avatar: ${avatarDestroy} e Path: ${avatarPath}`);
-
-      await user.update(req.body);
-
-      // Deletar o Avatar antigo no SQL
-      File.destroy({
-        where: {
-          id: avatarDestroy,
-        },
-      });
-
-      // Delete Avatar antigo na AWS
-      if (process.env.STORAGE_TYPE === 's3') {
-        s3.deleteObject(
-          {
-            Bucket: 'godent',
-            Key: avatarPath,
+        // Deletar o Avatar antigo no SQL
+        File.destroy({
+          where: {
+            id: avatarDestroy,
           },
-          async err => {
-            if (err) console.log(err, err.stack);
-            // an error occurred
-            else console.log('File deleted'); // successful response
-          }
-        );
+        });
+
+        // Delete Avatar antigo na AWS
+        if (process.env.STORAGE_TYPE === 's3') {
+          s3.deleteObject(
+            {
+              Bucket: 'godent',
+              Key: avatarPath,
+            },
+            async err => {
+              if (err) console.log(err, err.stack);
+              // an error occurred
+              else console.log('File deleted'); // successful response
+            }
+          );
+        }
       }
     }
 
