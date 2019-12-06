@@ -1,0 +1,69 @@
+version: '3.5'
+
+services:
+  gobarber:
+    container_name: gobarber
+    build: .
+    environment:
+      NODE_ENV: ${NODE_ENV}
+    volumes:
+      - .:/home/node/api
+      - /home/node/api/node_modules
+    ports:
+      - '${APP_PORT}:3333'
+    networks:
+      - gobarber
+    depends_on:
+      - postgres
+      - mongo
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "postgres:5432"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  postgres:
+    image: postgres:12
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - gobarber-pg:/var/lib/postgresql/data
+    networks:
+      - gobarber
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASS}
+    volumes:
+      - gobarber-mongo:/data/db
+    networks:
+      - gobarber
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    restart: always
+    volumes:
+      - gobarber-redis:/data
+    networks:
+      - gobarber
+
+
+volumes:
+  gobarber-pg:
+  gobarber-mongo:
+  gobarber-redis:
+
+networks:
+  gobarber:
+    name: gobarber
+    driver: bridge

@@ -15,7 +15,7 @@ services:
 networks:
   default:
     external:
-      name: devops_backend
+      name: backend
 
 
 volumes:
