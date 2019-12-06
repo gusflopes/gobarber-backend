@@ -2,26 +2,30 @@
 GoBarber Backend on Node.js - Developed during Rocketseat Bootcamp GoStack
 
 ## Starting the Project
-### Configure Docker
+### Initial Setup
+After cloning the project, follow these commands:
 ```
-docker run --name database -e POSTGRES_PASSWORD=docker -d -p 5432:5432 -d postgres:11`
-docker run --name mongobarber -p 27017:27017 -d -t mongo
-docker run --name redis -p 6379:6379 -d -t redis:alpine
-
-```
-
-### Starting the project
-Docker:
-```
-docker start database
-docker start mongobarber
-docker start redis
+yarn # Install dependencies
+docker-compose up -d # Build/Start All Services
+yarn sequelize db:create # Create the GoBarber Database if not already crated
+yarn sequelize db:migrate # Migrations
+yarn sequelize db:seed:all # Seed to create 2 users - only use in Development
 ```
 
-Servers:
+The project should be ready for startup with 3 services running on Docker Containers (Postgres, Redis and Mongo)
+
+### Start/Stop
+With the services running you can the following commands:
+
 ```
-yarn dev
-yarn queue
+yarn dev # Start the API
+yarn queue # Start the Queue for the Mailer Service
+```
+
+The services can be started/stopped using `docker-compose`:
+```
+docker-compose start -d # Start all the services
+docker-compose stop # Stop all the services
 ```
 
 Using debug if needed: `yarn dev:debug`
