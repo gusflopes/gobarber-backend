@@ -70,7 +70,7 @@ class UserController {
         if (process.env.STORAGE_TYPE === 's3') {
           s3.deleteObject(
             {
-              Bucket: 'godent',
+              Bucket: process.env.AWS_BUCKET,
               Key: avatarPath,
             },
             async err => {

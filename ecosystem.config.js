@@ -10,5 +10,13 @@ module.exports = {
       autorestart: true,
       max_memory_restart: '1G',
     },
+    {
+      name: 'gobarber-queue',
+      script: 'dist/queue.js',
+      exec_mode: 'fork',
+      instances: 1,
+      autorestart: true,
+      max_memory_restart: '1G',
+    },
   ],
 };

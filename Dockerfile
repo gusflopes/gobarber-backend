@@ -6,11 +6,13 @@ WORKDIR /home/node/api
 
 COPY package*.json yarn.* ./
 
+RUN npm install pm2 -g
+
+RUN echo 'export PATH="$(yarn global bin):$PATH"' >> ~/.bashrc
+
 USER node
 
 RUN yarn
-
-# RUN npm install pm2 -g
 
 COPY --chown=node:node . .
 

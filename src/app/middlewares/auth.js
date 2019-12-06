@@ -7,7 +7,7 @@ export default async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    return res.status(401).json({ error: 'Token not provided testando' });
+    return res.status(401).json({ error: 'Token not provided.' });
   }
 
   // Descartando o Bearer e pegando apenas o token
